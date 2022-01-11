@@ -2,12 +2,12 @@ const mongoose = require('mongoose');
 const cities = require('./cities');
 const { places, descriptors } = require('./seedHelpers');
 const Campground = require('../models/campgrounds');
-const cities = require('./cities');
+
 //this is hard-coded in for now, name of database might need to be changed for P2G project
-//the useXXX configs have deprecated might need to be commented out
+//the useXXX configs have deprecated might need to beg commented out
 mongoose.connect('mongodb://localhost:27017/yelp-camp', {
     useNewUrlParser: true,
-    useCreateIndex: true,
+    // useCreateIndex: true,
     useUnifiedTopology: true
 });
 
@@ -17,20 +17,25 @@ db.once("open", () => {
     console.log("Database Connected");
 });
 
+const sample = array => array[Math.floor(Math.random() * array.length)];
 const seedDB = async () => {
     await Campground.deleteMany({});
-    const c = new Campground({title: 'purple field'});
-    await c.save();
+    //const c = new Campground({title: 'purple field'});
+    //await c.save();
 
-    //above is test to make sure db is connected
+    //above is test to make sure db is connected (2 LINES)
     //below is the code to loop and seed the db
-    // for(let i = 0; i < 50; i++) {
-    //     const random1000 = Math.floor(Math.random() * 1000);
-    //     const camp = new Campground({
-    //         location: `${cities[random1000].city}, ${cities[random1000].state}`
-    //     })
-    //     await camp.save();
-    // }
+
+    for(let i = 0; i < 50; i++) {
+        const random1000 = Math.floor(Math.random() * 1000);
+        const camp = new Campground({
+            location: `${cities[random1000].city}, ${cities[random1000].state}`,
+            title: `${sample(descriptors)} ${sample(places)}`
+        })
+        await camp.save();
+    }
 }
 
-seedDB();
+seedDB().then(() => {
+    mongoose.connection.close();
+});
