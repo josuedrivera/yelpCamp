@@ -5,6 +5,7 @@ const path = require('path');
 const mongoose = require('mongoose');
 const Campground = require('./models/campgrounds');
 //this is hard-coded in for now, name of database might need to be changed for P2G project
+//the useXXX configs have deprecated and so have been commented out
 mongoose.connect('mongodb://localhost:27017/yelp-camp', {
     // useNewUrlParser: true,
     // useCreateIndex: true,
