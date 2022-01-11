@@ -4,7 +4,7 @@ const { places, descriptors } = require('./seedHelpers');
 const Campground = require('../models/campgrounds');
 const cities = require('./cities');
 //this is hard-coded in for now, name of database might need to be changed for P2G project
-//the useXXX configs have deprecated and so have been commented out
+//the useXXX configs have deprecated might need to be commented out
 mongoose.connect('mongodb://localhost:27017/yelp-camp', {
     useNewUrlParser: true,
     useCreateIndex: true,
