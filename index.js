@@ -8,9 +8,14 @@ const session = require('express-session');
 const flash = require('connect-flash');
 const ExpressError = require('./utils/ExpressError');
 const methodOverride = require('method-override');
+const passport = require('passport');
+const LocalStrategy = require('passport-local');
+const User = require('./models/user');
 
-const campgrounds = require('./routes/campgrounds');
-const reviews = require('./routes/reviews');
+// const campgroundRoutes = require('./routes/campgrounds');
+const userRoutes = require('./routes/users');
+const campgroundRoutes = require('./routes/campgrounds');
+const reviewRoutes = require('./routes/reviews');
 
 //this is hard-coded in for now, name of database might need to be changed for P2G project
 //the useXXX configs have deprecated and so have been commented out
@@ -51,6 +56,13 @@ const sessionConfig = {
 app.use(session(sessionConfig))
 app.use(flash());
 
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new LocalStrategy(User.authenticate()));
+
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+
 app.use((req, res, next) => {
     res.locals.success = req.flash('success');
     res.locals.error = req.flash('error');
@@ -58,8 +70,15 @@ app.use((req, res, next) => {
     next();
 })
 
-app.use('/campgrounds', campgrounds)
-app.use('/campgrounds/:id/reviews', reviews)
+//prob delete this segment
+app.get('/fakeUser', async(req, res) => {
+    const user = new User({ email: 'fake@ggmail.com', username: 'faker1223'});
+    const newUser = await User.register(user, 'bacon');
+    res.send(newUser);
+})
+app.use('/', userRoutes)
+app.use('/campgrounds', campgroundRoutes)
+app.use('/campgrounds/:id/reviews', reviewRoutes)
 
 app.get('/', (req, res) => {
     // res.send('HELLO FROM YELP CAMP')
