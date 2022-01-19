@@ -1,5 +1,10 @@
 //this used to be index.html....need to update git commits to reflect change
 //this is called app.js in the course
+
+if (process.env.NODE_ENV !== "production") {
+    require('dotenv').config();
+}
+
 const express = require('express');
 const path = require('path');
 const mongoose = require('mongoose');
