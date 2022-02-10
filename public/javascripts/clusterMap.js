@@ -1,14 +1,21 @@
-// const campground = require("../../models/campground"); delete this?
 mapboxgl.accessToken = mapToken;
 const map = new mapboxgl.Map({
-    container: 'map',
-    // style: 'mapbox://styles/mapbox/dark-v10',
+    container: 'cluster-map',
+   
+    // style: 'mapbox://styles/mapbox/light-v8',
+    // style: 'mapbox://styles/mapbox/streets-v9',
     style: 'mapbox://styles/mapbox/light-v10',
-    center: [-103.5917, 40.6699],
+    // style: 'mapbox://styles/mapbox/light-v11',
+    center: [-103.59179687498357, 40.66995747013945],
     zoom: 3
 });
 
-map.on('load', () => {
+map.addControl(new mapboxgl.NavigationControl());
+
+
+
+
+map.on('load', function () {
     // Add a new source from our GeoJSON data and
     // set the 'cluster' option to true. GL-JS will
     // add the point_count property to your source data.
@@ -16,7 +23,6 @@ map.on('load', () => {
         type: 'geojson',
         // Point to GeoJSON data. This example visualizes all M1.0+ earthquakes
         // from 12/22/15 to 1/21/16 as logged by USGS' Earthquake hazards program.
-        // data: 'https://docs.mapbox.com/mapbox-gl-js/assets/earthquakes.geojson',
         data: campgrounds,
         cluster: true,
         clusterMaxZoom: 14, // Max zoom to cluster points on
@@ -37,11 +43,19 @@ map.on('load', () => {
             'circle-color': [
                 'step',
                 ['get', 'point_count'],
-                '#00BCD4',
+                // '#11ffaa',
+                // '#00dd8e',
+                '#3fb1ce',
                 10,
-                '#2196F3',
-                25,
-                '#3F51B5'
+                // '#00c37d',
+                // '#00dd8e',
+                // '#00aa6d',
+                '#2c93ae',
+                30,
+                // '#00aa6d'
+                // '#005e3c'
+                '#278299'
+                
             ],
             'circle-radius': [
                 'step',
@@ -73,7 +87,8 @@ map.on('load', () => {
         source: 'campgrounds',
         filter: ['!', ['has', 'point_count']],
         paint: {
-            'circle-color': '#11b4da',
+            // 'circle-color': '#11ffaa',
+            'circle-color': '#7ccade',
             'circle-radius': 4,
             'circle-stroke-width': 1,
             'circle-stroke-color': '#fff'
@@ -81,14 +96,14 @@ map.on('load', () => {
     });
 
     // inspect a cluster on click
-    map.on('click', 'clusters', (e) => {
+    map.on('click', 'clusters', function (e) {
         const features = map.queryRenderedFeatures(e.point, {
             layers: ['clusters']
         });
         const clusterId = features[0].properties.cluster_id;
         map.getSource('campgrounds').getClusterExpansionZoom(
             clusterId,
-            (err, zoom) => {
+            function (err, zoom) {
                 if (err) return;
 
                 map.easeTo({
@@ -103,14 +118,9 @@ map.on('load', () => {
     // the unclustered-point layer, open a popup at
     // the location of the feature, with
     // description HTML from its properties.
-    map.on('click', 'unclustered-point', (e) => {
-        const { popupMarkup } = e.features[0].properties;
+    map.on('click', 'unclustered-point', function (e) {
+        const { popUpMarkup } = e.features[0].properties;
         const coordinates = e.features[0].geometry.coordinates.slice();
-        
-        // const coordinates = e.features[0].geometry.coordinates.slice();
-        // const mag = e.features[0].properties.mag;
-        // const tsunami =
-        //     e.features[0].properties.tsunami === 1 ? 'yes' : 'no';
 
         // Ensure that if the map is zoomed out such that
         // multiple copies of the feature are visible, the
@@ -121,17 +131,14 @@ map.on('load', () => {
 
         new mapboxgl.Popup()
             .setLngLat(coordinates)
-            .setHTML(
-                // `magnitude: ${mag}<br>Was there a tsunami?: ${tsunami}`
-                popupMarkup
-            )
+            .setHTML(popUpMarkup)
             .addTo(map);
     });
 
-    map.on('mouseenter', 'clusters', () => {
+    map.on('mouseenter', 'clusters', function () {
         map.getCanvas().style.cursor = 'pointer';
     });
-    map.on('mouseleave', 'clusters', () => {
+    map.on('mouseleave', 'clusters', function () {
         map.getCanvas().style.cursor = '';
     });
 });
