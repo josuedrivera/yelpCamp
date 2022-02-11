@@ -1,7 +1,9 @@
 const mongoose = require('mongoose');
-const Review = require('./review');
-// const { reviewSchema } = require('../schemas');
+const Review = require('./review')
 const Schema = mongoose.Schema;
+
+
+// https://res.cloudinary.com/douqbebwk/image/upload/w_300/v1600113904/YelpCamp/gxgle1ovzd2f3dgcpass.png
 
 const ImageSchema = new Schema({
     url: String,
@@ -14,7 +16,6 @@ ImageSchema.virtual('thumbnail').get(function () {
 
 const opts = { toJSON: { virtuals: true } };
 
-//will need to change the name of this for my places to go project
 const CampgroundSchema = new Schema({
     title: String,
     images: [ImageSchema],
@@ -44,10 +45,14 @@ const CampgroundSchema = new Schema({
     ]
 }, opts);
 
-CampgroundSchema.virtual('properties.popupMarkup').get(function () {
-    return `<strong><a href="/campgrounds/${this._id}">${this.title}</a></strong>
+
+CampgroundSchema.virtual('properties.popUpMarkup').get(function () {
+    return `
+    <strong><a href="/campgrounds/${this._id}">${this.title}</a><strong>
     <p>${this.description.substring(0, 20)}...</p>`
 });
+
+
 
 CampgroundSchema.post('findOneAndDelete', async function (doc) {
     if (doc) {
